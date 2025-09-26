@@ -9,7 +9,7 @@ interface GameState {
     currentPlayer: Player;
     status: GameStatus;
     winner: Player | null;
-    winningline: CellValue[];
+    winningline: number[];
 }
 
 const winlines: number[][] = [
@@ -38,7 +38,9 @@ export function newGame(): GameState {
    )
 }
 
-function makeMove(game: GameState): GameState {}
+function makeMove(game: GameState): GameState {
+    cell = game.board[]
+}
 
 export function checkForGameOver(game: GameState): GameState {
     // 1. check for win
@@ -46,7 +48,7 @@ export function checkForGameOver(game: GameState): GameState {
          if(game.board[a] !==null && game.board[a] === game.board[b] && game.board[b] === game.board[c]){
             game.status = "won";
             game.winner = game.board[a];
-            game.winningline = 
+            game.winningline = [a, b, c];
          }
 
     }
