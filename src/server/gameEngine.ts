@@ -9,7 +9,13 @@ interface GameState {
     currentPlayer: Player;
     status: GameStatus;
     winner: Player | null;
-    winningline: number[];
+    winningline: number[] | null;
+}
+
+type WinState = {
+    status: GameStatus,
+    winner: Player | null,
+    winningline: number[] | null
 }
 
 const winlines: number[][] = [
@@ -27,40 +33,86 @@ const winlines: number[][] = [
 ];
 
 export function newGame(): GameState {
-   const newBoard = Array<CellValue>(9).fill(null);
+    const newBoard = Array<CellValue>(9).fill(null);
 
-    return(
-      { board: newBoard,
-        currentPlayer: "X",
-        status: "playing",
-        winner: null,
-    }
-   )
-}
-
-function makeMove(game: GameState): GameState {
-    cell = game.board[]
-}
-
-export function checkForGameOver(game: GameState): GameState {
-    // 1. check for win
-    for (const [a, b, c] of winlines){
-         if(game.board[a] !==null && game.board[a] === game.board[b] && game.board[b] === game.board[c]){
-            game.status = "won";
-            game.winner = game.board[a];
-            game.winningline = [a, b, c];
-         }
-
-    }
-    // 2. check for tie
-    const boardIsFull = game.board.every((cell)=> cell !== null)
-    
-    if(boardIsFull){game.status = "draw"}
-
-    return(
-        game
+    return (
+        {
+            board: newBoard,
+            currentPlayer: "X",
+            status: "playing",
+            winner: null,
+        }
     )
+}
 
+function makeMove(game: GameState, move: number): GameState {
+    if (!isValidMove(game, move))
+        return game
+
+    const gameCopy = structuredClone(game)
+
+    gameCopy.board[move] = gameCopy.currentPlayer
+
+    const winData = checkWinner(gameCopy)
+    const isDraw = isGameOver(gameCopy)
+    // if (winData.winner !== null && isGameOver(gameCopy) === false)
+    //     return gameCopy
+    // return {...gameCopy,
+    //     winner: winData.winner
+    // }
+    return {
+        ...game,
+        winner: winData.winner,
+        winningline: winData.winningline,
+        status: winData.status
+    }
+}
+
+// function makeMove(game: GameState, move: number): GameState {
+//     if (!isValidMove()) {
+//         game;
+//     }
+
+//     const newGame = copyGame();
+
+//     const winner = checkWinner(newGame);
+//     if (winner) {
+//         newGame.winner = winner;
+//     }
+
+//     const isGameOver = checkGameOver();
+//     newGame.gameover = isGameOver;
+
+//     if (!winner && !isGameOver) {
+//         newGame.player = newGame.player === 'X' ? 'O' : 'X';
+//     }
+
+//     return newGame;
+// }
+
+export function checkWinner(game: GameState): WinState {
+    for (const [a, b, c] of winlines) {
+        if (game.board[a] !== null && game.board[a] === game.board[b] && game.board[b] === game.board[c]) {
+            return {
+                status: "won",
+                winner: game.board[a],
+                winningline: [a, b, c]
+            }
+        }
+    }
+    return {status: "playing",
+        winner: null,
+        winningline: null
+    };
+}
+
+export function isDraw(game: GameState): boolean {
+    return game.board.every((cell) => cell !== null)
+
+}
+
+function isValidMove(game: GameState, move: number) {
+    return game.board[move] !== null
 }
 
 export type { Player, CellValue, Board, GameStatus }
