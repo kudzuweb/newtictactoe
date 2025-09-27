@@ -1,10 +1,10 @@
 // type definitions
-type Player = "X" | "O"
-type CellValue = "X" | "O" | null
-type Board = CellValue[]
-type GameStatus = "playing" | "won" | "draw"
+export type Player = "X" | "O"
+export type CellValue = "X" | "O" | null
+export type Board = CellValue[]
+export type GameStatus = "playing" | "won" | "draw"
 
-interface GameState {
+export interface GameState {
     board: Board;
     currentPlayer: Player;
     status: GameStatus;
@@ -12,13 +12,13 @@ interface GameState {
     winningline: number[] | null;
 }
 
-type WinState = {
+export type WinState = {
     status: GameStatus,
     winner: Player | null,
     winningline: number[] | null
 }
 
-const winlines: number[][] = [
+export const winlines: number[][] = [
     // rows
     [0, 1, 2],
     [3, 4, 5],
@@ -45,7 +45,25 @@ export function newGame(): GameState {
     )
 }
 
-function makeMove(game: GameState, move: number): GameState {
+export function isValidMove(game: GameState, move: number) {
+        return game.board[move] !== null
+    }
+
+export function checkWinner(game: GameState): Player | null {
+    for (const [a, b, c] of winlines) {
+        if (game.board[a] !== null && game.board[a] === game.board[b] && game.board[b] === game.board[c]) {
+            return game.board[a]
+        }
+    }
+    return null;
+}
+
+export function isDraw(game: GameState): boolean {
+        return game.board.every((cell) => cell !== null)
+
+    }
+
+export function makeMove(game: GameState, move: number): GameState {
     if (!isValidMove(game, move))
         return game
 
@@ -54,18 +72,10 @@ function makeMove(game: GameState, move: number): GameState {
     gameCopy.board[move] = gameCopy.currentPlayer
 
     const winData = checkWinner(gameCopy)
-    const isDraw = isGameOver(gameCopy)
-    // if (winData.winner !== null && isGameOver(gameCopy) === false)
-    //     return gameCopy
-    // return {...gameCopy,
-    //     winner: winData.winner
-    // }
+    const isDraw = isDraw(gameCopy)
+   
     return {
-        ...game,
-        winner: winData.winner,
-        winningline: winData.winningline,
-        status: winData.status
-    }
+        game
 }
 
 // function makeMove(game: GameState, move: number): GameState {
@@ -90,29 +100,9 @@ function makeMove(game: GameState, move: number): GameState {
 //     return newGame;
 // }
 
-export function checkWinner(game: GameState): WinState {
-    for (const [a, b, c] of winlines) {
-        if (game.board[a] !== null && game.board[a] === game.board[b] && game.board[b] === game.board[c]) {
-            return {
-                status: "won",
-                winner: game.board[a],
-                winningline: [a, b, c]
-            }
-        }
-    }
-    return {status: "playing",
-        winner: null,
-        winningline: null
-    };
-}
 
-export function isDraw(game: GameState): boolean {
-    return game.board.every((cell) => cell !== null)
 
-}
 
-function isValidMove(game: GameState, move: number) {
-    return game.board[move] !== null
-}
 
-export type { Player, CellValue, Board, GameStatus }
+    export type { Player, CellValue, Board, GameStatus }
+    export default { newGame, makeMove }

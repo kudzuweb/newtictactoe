@@ -1,16 +1,20 @@
 import Board from './Board'
 
-import "./App.css";
+// import "./App.css";
 
-import { useState } from "react";
+
 
 function App() {
   return (
-    <div>
-      <Board />
-    </div>
+    <>
+      <h1 className='flex justify-center'>Tic Tac Toe</h1>
+      <div className='flex-lg h-7'>
+        <div>
+          <Board />
+        </div>
+      </div>
+    </>
   )
-
 }
 
 export default App;
